@@ -1,0 +1,19 @@
+id: 002-mirror-maze
+title: The Hall of Infinite Reflections
+description: >
+  Your reflection steps before you, mimicking your every move — except its grin
+  is just a bit too wide. Mirrors stretch in every direction, some cracked,
+  some fogged, some showing rooms that definitely aren't behind them.
+exits:
+  west: 001-goblin-tea-party
+  north: TODO-shattered-sanctum
+  east: TODO-hall-of-echoes
+items:
+  - name: Handheld Mirror
+    description: Shows you what's behind you. Also winks at you when you're not looking.
+monster:
+  name: Reflected Doppelganger
+  greeting: "You look tired. Mind if I borrow your face?"
+  difficulty: 3
+easter_egg: Say "I know you're not real" and the doppelganger sulks into a mirror, disappearing.
+author: dhruvxbug
