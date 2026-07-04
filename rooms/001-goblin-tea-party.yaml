@@ -6,7 +6,7 @@ description: >
   something extremely important.
 exits:
   south: 000-entrance
-  east: TODO-mirror-maze
+  east: 002-mirror-maze
 monster:
   name: Goblin King (mid-sip)
   greeting: "WHO DARES DISTURB THE TEA?"
