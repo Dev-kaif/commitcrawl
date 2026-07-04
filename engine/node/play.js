@@ -19,18 +19,25 @@ function loadRooms() {
 }
 
 const rooms = loadRooms();
-let currentId = rooms.has("000-entrance") ? "000-entrance" : [...rooms.keys()][0];
+let currentId = rooms.has("000-entrance")
+  ? "000-entrance"
+  : [...rooms.keys()][0];
 const inventory = [];
 const defeated = new Set();
 
-const rl = readline.createInterface({ input: process.stdin, output: process.stdout });
+const rl = readline.createInterface({
+  input: process.stdin,
+  output: process.stdout,
+});
 
 function describeRoom(room) {
   console.log(`\n=== ${room.title} ===`);
   console.log(room.description.trim());
 
   if (room.monster && !defeated.has(room.id)) {
-    console.log(`\nA ${room.monster.name} is here. It says: "${room.monster.greeting}"`);
+    console.log(
+      `\nA ${room.monster.name} is here. It says: "${room.monster.greeting}"`,
+    );
   }
 
   if (room.items && room.items.length) {
@@ -63,7 +70,9 @@ function handleCommand(input) {
     if (!target) {
       console.log(`You can't go ${arg} from here.`);
     } else if (String(target).startsWith("TODO-")) {
-      console.log("There's a door here, but it hasn't been built yet. Maybe you should build it?");
+      console.log(
+        "There's a door here, but it hasn't been built yet. Maybe you should build it?",
+      );
     } else if (!rooms.has(target)) {
       console.log("That exit leads nowhere (broken room reference).");
     } else {
@@ -71,9 +80,10 @@ function handleCommand(input) {
       describeRoom(rooms.get(currentId));
     }
   } else if (verb === "take" && arg) {
-    const item = room.items && room.items.find((i) => i.name.toLowerCase().includes(arg));
+    const item =
+      room.items && room.items.find((i) => i.name.toLowerCase().includes(arg));
     if (item) {
-      inventory.push(item.name);
+      inventory.push(item);
       room.items = room.items.filter((i) => i !== item);
       console.log(`You take the ${item.name}.`);
     } else {
@@ -81,19 +91,43 @@ function handleCommand(input) {
     }
   } else if (verb === "fight" && room.monster && !defeated.has(room.id)) {
     defeated.add(room.id);
-    console.log(`You bravely fight the ${room.monster.name}... and somehow win. It shuffles off, muttering.`);
+    console.log(
+      `You bravely fight the ${room.monster.name}... and somehow win. It shuffles off, muttering.`,
+    );
   } else if (input === "inventory" || input === "i") {
-    console.log(inventory.length ? `You are carrying: ${inventory.join(", ")}` : "You have nothing.");
+    console.log(
+      inventory.length
+        ? `You are carrying: ${inventory.map((i) => i.name).join(", ")}`
+        : "You have nothing.",
+    );
   } else if (input === "help") {
-    console.log("Commands: look, go <direction>, take <item>, fight, inventory, quit");
+    console.log(
+      "Commands: look, go <direction>, take <item>, check <item>, fight, inventory, quit",
+    );
   } else if (input === "quit" || input === "exit") {
     console.log("You climb out of the dungeon. See you next time.");
     rl.close();
     return;
+  } else if (verb === "check" && arg) {
+    const roomItem =
+      room.items && room.items.find((i) => i.name.toLowerCase().includes(arg));
+
+    const inventoryItem = inventory.find((i) =>
+      i.name.toLowerCase().includes(arg),
+    );
+
+    const item = roomItem || inventoryItem;
+
+    if (item) {
+      console.log(`\n${item.name}`);
+      console.log(item.description);
+    } else {
+      console.log("You don't see or have that item.");
+    }
   } else {
     console.log("Not sure how to do that. Type 'help' for commands.");
   }
-
+  
   prompt();
 }
 
