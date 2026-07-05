@@ -6,6 +6,7 @@ description: >
 exits:
   north: 002-mirror-maze
   west: 000-entrance
+  east: 005-cosmic-observatory
 items:
   - name: Dragonbane
     description: >
