@@ -1,3 +1,5 @@
-node_modules
+node_modules/
 demo.gif
 demo.mp4
+.agent/
+AGENTS.md
