@@ -1,0 +1,51 @@
+id: 005-cosmic-observatory
+
+title: The Observatory Beyond the Ceiling
+
+description: >
+  The dungeon simply... ends.
+  Where cold stone should seal the chamber, an endless universe stretches overhead,
+  alive with drifting nebulae, impossible constellations, and galaxies that move
+  ever so slightly when you're not looking directly at them. An ancient brass
+  telescope slowly turns on its own, tracking your every step without making a
+  sound. Resting beneath it is a weathered bronze plaque engraved with the words:
+  "Built by Adarsh, who believed every mystery begins with looking up."
+
+exits:
+  west: 003-mighty-dragon
+  up: TODO-event-horizon
+
+ascii_art: |
+                          *      .      ✦        .      *         .        ✧
+                              .       *      .       ✦      .         *
+                           .      ✧        .      *      .       ✦
+                                *      .       *        .      *       .
+                           ✦         .      *       .        ✧      .
+                              .   *      .      ✦       .       *       .
+                           .      .     *      .      *      .      ✦
+                                ✧      .      *      .       *       .
+                           *       .      ✦       .      *       .      *
+                              .      *       .      ✧      .       *
+                           .       ✦      .      *       .      ✦
+                                *      .       .      *      .      ✧
+
+items:
+  - name: Celestial Atlas
+    description: >
+      A beautifully illustrated atlas whose constellations rearrange themselves
+      each time you open it. One unnamed star pulses softly, as if waiting for
+      someone to discover it.
+
+monster:
+  name: The Celestial Watcher
+  greeting: >
+    "For centuries I have watched adventurers seek gold, glory, and power.
+    You are the first to pause and admire the stars.
+    Perhaps your journey will end differently."
+  difficulty: 2
+
+easter_egg: >
+  Type "look through telescope" to glimpse a constellation that perfectly mirrors
+  the dungeon below.
+
+author: adarsh-singh01
