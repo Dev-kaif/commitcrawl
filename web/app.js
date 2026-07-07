@@ -10,19 +10,31 @@ function hashSeed(str) {
 function seededRandom(seed) {
   let s = seed;
   return function () {
-    s ^= s << 13; s ^= s >>> 17; s ^= s << 5;
+    s ^= s << 13;
+    s ^= s >>> 17;
+    s ^= s << 5;
     s >>>= 0;
     return (s % 100000) / 100000;
   };
 }
 
-const VALID_DIRECTIONS = ["north", "south", "east", "west", "up", "down", "in", "out"];
+const VALID_DIRECTIONS = [
+  "north",
+  "south",
+  "east",
+  "west",
+  "up",
+  "down",
+  "in",
+  "out",
+];
 
 async function main() {
   const rooms = await fetch("rooms.json").then((r) => r.json());
   const roomIds = Object.keys(rooms);
 
-  document.getElementById("room-count").textContent = `${roomIds.length} room${roomIds.length === 1 ? "" : "s"} built`;
+  document.getElementById("room-count").textContent =
+    `${roomIds.length} room${roomIds.length === 1 ? "" : "s"} built`;
 
   // ---------- build graph: real rooms + ghost nodes for locked (TODO-) doors ----------
   const nodes = new Map();
@@ -67,11 +79,13 @@ function layoutNodes(nodes, edges) {
   const list = [...nodes.values()];
   const rand = seededRandom(hashSeed(list.map((n) => n.id).join("|")) || 1);
 
-  const W = 900, H = 620;
+  const W = 900,
+    H = 620;
   list.forEach((n) => {
     n.x = W / 2 + (rand() - 0.5) * W * 0.8;
     n.y = H / 2 + (rand() - 0.5) * H * 0.8;
-    n.vx = 0; n.vy = 0;
+    n.vx = 0;
+    n.vy = 0;
   });
 
   const idealLen = 150;
@@ -79,25 +93,35 @@ function layoutNodes(nodes, edges) {
     // repulsion between every pair
     for (let i = 0; i < list.length; i++) {
       for (let j = i + 1; j < list.length; j++) {
-        const a = list[i], b = list[j];
-        let dx = a.x - b.x, dy = a.y - b.y;
+        const a = list[i],
+          b = list[j];
+        let dx = a.x - b.x,
+          dy = a.y - b.y;
         let dist = Math.sqrt(dx * dx + dy * dy) || 0.01;
         const force = 2200 / (dist * dist);
-        dx /= dist; dy /= dist;
-        a.vx += dx * force; a.vy += dy * force;
-        b.vx -= dx * force; b.vy -= dy * force;
+        dx /= dist;
+        dy /= dist;
+        a.vx += dx * force;
+        a.vy += dy * force;
+        b.vx -= dx * force;
+        b.vy -= dy * force;
       }
     }
     // spring along edges
     for (const e of edges) {
-      const a = nodes.get(e.from), b = nodes.get(e.to);
+      const a = nodes.get(e.from),
+        b = nodes.get(e.to);
       if (!a || !b) continue;
-      let dx = b.x - a.x, dy = b.y - a.y;
+      let dx = b.x - a.x,
+        dy = b.y - a.y;
       let dist = Math.sqrt(dx * dx + dy * dy) || 0.01;
       const force = (dist - idealLen) * 0.02;
-      dx /= dist; dy /= dist;
-      a.vx += dx * force; a.vy += dy * force;
-      b.vx -= dx * force; b.vy -= dy * force;
+      dx /= dist;
+      dy /= dist;
+      a.vx += dx * force;
+      a.vy += dy * force;
+      b.vx -= dx * force;
+      b.vy -= dy * force;
     }
     // gentle pull to center + integrate
     for (const n of list) {
@@ -105,16 +129,21 @@ function layoutNodes(nodes, edges) {
       n.vy += (H / 2 - n.y) * 0.001;
       n.x += n.vx * 0.6;
       n.y += n.vy * 0.6;
-      n.vx *= 0.82; n.vy *= 0.82;
+      n.vx *= 0.82;
+      n.vy *= 0.82;
     }
   }
 
   // normalize into a padded viewport
   const pad = 70;
-  const xs = list.map((n) => n.x), ys = list.map((n) => n.y);
-  const minX = Math.min(...xs), maxX = Math.max(...xs);
-  const minY = Math.min(...ys), maxY = Math.max(...ys);
-  const spanX = Math.max(maxX - minX, 1), spanY = Math.max(maxY - minY, 1);
+  const xs = list.map((n) => n.x),
+    ys = list.map((n) => n.y);
+  const minX = Math.min(...xs),
+    maxX = Math.max(...xs);
+  const minY = Math.min(...ys),
+    maxY = Math.max(...ys);
+  const spanX = Math.max(maxX - minX, 1),
+    spanY = Math.max(maxY - minY, 1);
 
   list.forEach((n) => {
     n.x = pad + ((n.x - minX) / spanX) * (W - pad * 2);
@@ -127,12 +156,16 @@ function layoutNodes(nodes, edges) {
 // ---------- SVG rendering ----------
 function wobblyPath(x1, y1, x2, y2, seed) {
   const rand = seededRandom(seed);
-  const mx = (x1 + x2) / 2, my = (y1 + y2) / 2;
-  const dx = x2 - x1, dy = y2 - y1;
+  const mx = (x1 + x2) / 2,
+    my = (y1 + y2) / 2;
+  const dx = x2 - x1,
+    dy = y2 - y1;
   const len = Math.sqrt(dx * dx + dy * dy) || 1;
-  const nx = -dy / len, ny = dx / len;
+  const nx = -dy / len,
+    ny = dx / len;
   const offset = (rand() - 0.5) * Math.min(len * 0.4, 40);
-  const cx = mx + nx * offset, cy = my + ny * offset;
+  const cx = mx + nx * offset,
+    cy = my + ny * offset;
   return `M ${x1.toFixed(1)},${y1.toFixed(1)} Q ${cx.toFixed(1)},${cy.toFixed(1)} ${x2.toFixed(1)},${y2.toFixed(1)}`;
 }
 
@@ -141,14 +174,21 @@ function renderMap(nodes, edges, onSelect) {
   svg.setAttribute("viewBox", nodes.__viewBox);
   svg.innerHTML = "";
 
-  const passageLayer = document.createElementNS("http://www.w3.org/2000/svg", "g");
+  const passageLayer = document.createElementNS(
+    "http://www.w3.org/2000/svg",
+    "g",
+  );
   const nodeLayer = document.createElementNS("http://www.w3.org/2000/svg", "g");
 
   edges.forEach((e) => {
-    const a = nodes.get(e.from), b = nodes.get(e.to);
+    const a = nodes.get(e.from),
+      b = nodes.get(e.to);
     if (!a || !b) return;
     const path = document.createElementNS("http://www.w3.org/2000/svg", "path");
-    path.setAttribute("d", wobblyPath(a.x, a.y, b.x, b.y, hashSeed(e.from + e.to + e.dir)));
+    path.setAttribute(
+      "d",
+      wobblyPath(a.x, a.y, b.x, b.y, hashSeed(e.from + e.to + e.dir)),
+    );
     path.setAttribute("class", "passage" + (e.locked ? " locked" : ""));
     passageLayer.appendChild(path);
   });
@@ -162,7 +202,10 @@ function renderMap(nodes, edges, onSelect) {
     g.setAttribute("aria-label", n.ghost ? "Unbuilt room" : n.room.title);
 
     if (!n.ghost) {
-      const glow = document.createElementNS("http://www.w3.org/2000/svg", "circle");
+      const glow = document.createElementNS(
+        "http://www.w3.org/2000/svg",
+        "circle",
+      );
       glow.setAttribute("class", "torch-glow");
       glow.setAttribute("cx", n.x);
       glow.setAttribute("cy", n.y);
@@ -170,14 +213,20 @@ function renderMap(nodes, edges, onSelect) {
       g.appendChild(glow);
     }
 
-    const circle = document.createElementNS("http://www.w3.org/2000/svg", "circle");
+    const circle = document.createElementNS(
+      "http://www.w3.org/2000/svg",
+      "circle",
+    );
     circle.setAttribute("class", "node-circle");
     circle.setAttribute("cx", n.x);
     circle.setAttribute("cy", n.y);
     circle.setAttribute("r", n.ghost ? 10 : 14);
     g.appendChild(circle);
 
-    const label = document.createElementNS("http://www.w3.org/2000/svg", "text");
+    const label = document.createElementNS(
+      "http://www.w3.org/2000/svg",
+      "text",
+    );
     label.setAttribute("class", "node-label");
     label.setAttribute("x", n.x);
     label.setAttribute("y", n.y + (n.ghost ? 24 : 28));
@@ -186,7 +235,10 @@ function renderMap(nodes, edges, onSelect) {
 
     g.addEventListener("click", () => onSelect(n.id));
     g.addEventListener("keydown", (evt) => {
-      if (evt.key === "Enter" || evt.key === " ") { evt.preventDefault(); onSelect(n.id); }
+      if (evt.key === "Enter" || evt.key === " ") {
+        evt.preventDefault();
+        onSelect(n.id);
+      }
     });
 
     nodeLayer.appendChild(g);
@@ -213,26 +265,41 @@ function renderRoomDetail(room, rooms, onSelect) {
   const artHtml = room.image
     ? `<img src="${escapeAttr(room.image)}" alt="${escapeAttr(room.title)}" />`
     : room.ascii_art
-    ? `<pre>${escapeHtml(room.ascii_art.trimEnd())}</pre>`
-    : "";
+      ? `<pre>${escapeHtml(room.ascii_art.trimEnd())}</pre>`
+      : "";
 
-  const itemsHtml = room.items && room.items.length
-    ? `<div class="room-section"><h3>Items</h3><div class="pill-row">${room.items
-        .map((i) => `<span class="pill" title="${escapeAttr(i.description || "")}">${escapeHtml(i.name)}</span>`)
-        .join("")}</div></div>`
-    : "";
+  const itemsHtml =
+    room.items && room.items.length
+      ? `<div class="room-section"><h3>Items</h3><div class="pill-row">${room.items
+          .map(
+            (i) =>
+              `<span class="pill" title="${escapeAttr(i.description || "")}">${escapeHtml(i.name)}</span>`,
+          )
+          .join("")}</div></div>`
+      : "";
 
   const monsterHtml = room.monster
     ? `<div class="room-section"><div class="monster-box"><strong>${escapeHtml(room.monster.name)}</strong> — "${escapeHtml(room.monster.greeting || "")}"</div></div>`
     : "";
 
   const exitsHtml = room.exits
-    ? `<div class="room-section"><h3>Exits</h3><div class="pill-row">${Object.entries(room.exits)
+    ? `<div class="room-section"><h3>Exits</h3><div class="pill-row">${Object.entries(
+        room.exits,
+      )
         .map(([dir, target]) => {
           const locked = String(target).startsWith("TODO-");
           return `<button class="exit-btn${locked ? " locked" : ""}" data-target="${escapeAttr(target)}" ${locked ? "disabled" : ""}>${escapeHtml(dir)}${locked ? " (locked)" : ""}</button>`;
         })
         .join("")}</div></div>`
+    : "";
+
+  const puzzleHtml = room.puzzle
+    ? `<div class="room-section puzzle-box">
+        <h3>⚙ Puzzle</h3>
+        <p class="puzzle-desc">${escapeHtml(room.puzzle.description || "")}</p>
+        ${room.puzzle.question ? `<p class="puzzle-question"><em>${escapeHtml(room.puzzle.question)}</em></p>` : ""}
+        ${room.puzzle.success_msg ? `<p class="puzzle-success">✔ ${escapeHtml(room.puzzle.success_msg)}</p>` : ""}
+      </div>`
     : "";
 
   const eggHtml = room.easter_egg
@@ -247,13 +314,16 @@ function renderRoomDetail(room, rooms, onSelect) {
       <p class="room-description">${escapeHtml(room.description.trim())}</p>
       ${monsterHtml}
       ${itemsHtml}
+      ${puzzleHtml}
       ${exitsHtml}
       ${eggHtml}
     </div>
   `;
 
   pane.querySelectorAll(".exit-btn:not([disabled])").forEach((btn) => {
-    btn.addEventListener("click", () => onSelect(btn.getAttribute("data-target")));
+    btn.addEventListener("click", () =>
+      onSelect(btn.getAttribute("data-target")),
+    );
   });
 }
 
@@ -274,10 +344,20 @@ function renderEmptyState() {
 }
 
 function escapeHtml(str) {
-  return String(str).replace(/[&<>"']/g, (c) => ({
-    "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;",
-  }[c]));
+  return String(str).replace(
+    /[&<>"']/g,
+    (c) =>
+      ({
+        "&": "&amp;",
+        "<": "&lt;",
+        ">": "&gt;",
+        '"': "&quot;",
+        "'": "&#39;",
+      })[c],
+  );
 }
-function escapeAttr(str) { return escapeHtml(str); }
+function escapeAttr(str) {
+  return escapeHtml(str);
+}
 
 main();
