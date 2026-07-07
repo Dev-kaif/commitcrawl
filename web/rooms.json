@@ -6,7 +6,8 @@
     "ascii_art": "+--------+\n|  [][]  |\n|   ||   |\n|  ----  |\n+--------+\n  |  |\n  |  |\n",
     "exits": {
       "north": "001-goblin-tea-party",
-      "east": "003-mighty-dragon"
+      "east": "003-mighty-dragon",
+      "west": "006-library-of-lies"
     },
     "items": [
       {
@@ -130,6 +131,32 @@
     },
     "easter_egg": "Type \"look through telescope\" to glimpse a constellation that perfectly mirrors the dungeon below.\n",
     "author": "adarsh-singh01"
+  },
+  "006-library-of-lies": {
+    "id": "006-library-of-lies",
+    "title": "The Library of Lies",
+    "description": "Shelves stretch into darkness, crammed with books whose titles actively insult you. \"Honest Politicians: A Complete Collection\" (all pages blank). \"The Ocean is Dry\" (just a picture of a desert). \"101% Accurate Riddles.\" A single leather-bound book glows faintly on a pedestal at the center. A stone alcove shaped like an open book is set into the north wall.\n",
+    "exits": {
+      "east": "000-entrance",
+      "north": "TODO-shattered-sanctum"
+    },
+    "items": [
+      {
+        "name": "Riddle Book",
+        "description": "You open it. Inside, a single line: \"I have words but never speak. What am I?\" The rest is blank. On the last page, someone scrawled: \"Place me in the alcove. The answer is also the key.\"\n"
+      }
+    ],
+    "ascii_art": "_______________________________\n/   ________________________   \\\n|  |  The Only True Riddle  |  |\n|  |  in This Library       |  |\n|  |________________________|  |\n|                              |\n \\_____________________________/\n    \\_______________________/\n     |||||||||||||||||||||||\n     |||||||||||||||||||||||\n",
+    "puzzle": {
+      "locked_exit": "north",
+      "description": "A stone alcove shaped like an open book. An inscription reads: \"Speak the answer with your hands.\"\n",
+      "question": "What has words but never speaks?",
+      "answer": "book",
+      "success_msg": "The alcove glows. The book sinks into the stone, and the wall grinds open, revealing a passage northward. (go north)\n"
+    },
+    "difficulty": 4,
+    "easter_egg": "Check the Riddle Book to read the riddle. Take it, then place it in the alcove to unlock the north exit.\n",
+    "author": "dhruvxbug"
   },
   "l1c1-01-stairwell": {
     "id": "l1c1-01-stairwell",
